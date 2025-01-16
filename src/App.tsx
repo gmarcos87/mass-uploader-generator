@@ -42,12 +42,12 @@ const createImageWithText = (text: string) =>
     }
   });
 
-const createFiles = async () => {
+const createFiles = async (amount = 50) => {
   // create 50 images and add them to the zip file
   const zip = new JSZip();
   let csvText = `filename;name;tags\n`;
 
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < amount; i++) {
     const text = i.toString();
     const canvas = await createImageWithText(text);
     await new Promise<void>((resolve) => {
@@ -82,10 +82,11 @@ const createFiles = async () => {
 
 function App() {
   const [isCreating, setIsCreating] = useState(false);
+  const [amount, setAmount] = useState<number>();
 
   const create = async () => {
     setIsCreating(true);
-    await createFiles();
+    await createFiles(amount);
     setIsCreating(false);
   };
 
@@ -95,6 +96,12 @@ function App() {
         <PaletteBox key={color} color={color} />
       ))}
       <h1>Mass uploader</h1>
+      <input
+        placeholder="Amount of images"
+        type="number"
+        value={amount || ""}
+        onChange={(e) => setAmount(parseInt(e.target.value))}
+      />
       <div className="card">
         <button onClick={create} disabled={isCreating}>
           {isCreating ? "Creating images" : "Download"}
